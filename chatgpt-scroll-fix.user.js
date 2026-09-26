@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ChatGPT Scroll Fix
 // @namespace    https://github.com/soshroom/chatgpt-scroll-fix
-// @version      1.0.0
-// @description  Fix broken mouse-wheel scrolling in ChatGPT while preserving its reverse-scroll virtualizer coordinates.
+// @version      1.1.0
+// @description  Fix ChatGPT mouse-wheel scrolling and restore middle-click on New chat.
 // @author       soshroom
 // @match        https://chatgpt.com/*
 // @homepageURL  https://github.com/soshroom/chatgpt-scroll-fix
@@ -220,4 +220,51 @@
     } else {
         document.addEventListener('DOMContentLoaded', start, { once: true });
     }
+
+    /*
+     * ChatGPT renders "New chat" as a button instead of a link.
+     * Restore the browser-like middle-click behavior without changing
+     * the normal left-click action handled by ChatGPT.
+     */
+    function getNewChatButton(target) {
+        if (!(target instanceof Element)) {
+            return null;
+        }
+
+        return target.closest(
+            'button[aria-label="Новый чат"], button[aria-label="New chat"]'
+        );
+    }
+
+    document.addEventListener(
+        'mousedown',
+        event => {
+            if (event.button !== 1 || !getNewChatButton(event.target)) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        },
+        true
+    );
+
+    document.addEventListener(
+        'auxclick',
+        event => {
+            if (event.button !== 1 || !getNewChatButton(event.target)) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            window.open(
+                `${location.origin}/`,
+                '_blank',
+                'noopener'
+            );
+        },
+        true
+    );
 })();
