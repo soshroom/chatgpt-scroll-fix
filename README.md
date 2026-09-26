@@ -12,6 +12,7 @@ This script keeps both sides happy:
 - ChatGPT still sees the reverse `scrollTop` coordinate system expected by its virtualizer
 - `scrollTo()` and `scroll()` calls on the conversation container are translated as well
 - React can recreate the conversation container without requiring a page reload
+- middle-click on the **New chat** button opens a fresh ChatGPT tab again
 
 ## Install
 
@@ -87,6 +88,19 @@ This is enough to restore wheel scrolling:
 However, ChatGPT's virtualized conversation code still assumes reverse coordinates. As new tokens stream into an answer, its own scroll management can move the conversation to the wrong physical position.
 
 The coordinate proxy is the part that prevents that jump.
+
+## Middle-click on New chat
+
+The current UI renders **New chat** as a `<button>` instead of a normal link, so the browser cannot apply its usual middle-click behavior.
+
+The userscript listens only for middle-button events on:
+
+```css
+button[aria-label="Новый чат"],
+button[aria-label="New chat"]
+```
+
+A middle-click opens `https://chatgpt.com/` in a new tab. Normal left-click behavior is left untouched.
 
 ## Scope
 
