@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Scroll Fix
 // @namespace    https://github.com/soshroom/chatgpt-scroll-fix
-// @version      1.1.0
+// @version      1.1.1
 // @description  Fix ChatGPT mouse-wheel scrolling and restore middle-click on New chat.
 // @author       soshroom
 // @match        https://chatgpt.com/*
@@ -231,9 +231,28 @@
             return null;
         }
 
-        return target.closest(
-            'button[aria-label="Новый чат"], button[aria-label="New chat"]'
-        );
+        const button = target.closest('button');
+
+        if (!button) {
+            return null;
+        }
+
+        const label = button.getAttribute('aria-label')?.trim();
+
+        const text = button.textContent
+            ?.replace(/\s+/g, ' ')
+            .trim();
+
+        if (
+            label === 'Новый чат' ||
+            label === 'New chat' ||
+            text === 'Новый чат' ||
+            text === 'New chat'
+        ) {
+            return button;
+        }
+
+        return null;
     }
 
     document.addEventListener(
